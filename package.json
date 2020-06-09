@@ -1,0 +1,27 @@
+{
+	"name": "pleco",
+	"version": "0.1.0",
+	"description": "Hypercore web crawler",
+	"main": "index.js",
+	"bin": {
+		"pleco": "node index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/metanomial/pleco.git"
+	},
+	"bugs": {
+		"url": "https://github.com/metanomial/pleco/issues"
+	},
+	"homepage": "https://github.com/metanomial/pleco",
+	"author": {
+		"name": "Benjamin Herman",
+		"email": "benjamin@metanomial.com",
+		"url": "https://metanomial.com"
+	},
+	"scripts": {
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"license": "MIT"
+}
