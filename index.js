@@ -100,13 +100,7 @@ async function crawlHyper(key) {
 		for (const entry of entries) {
 			try {
 				console.group(`Scraping ${ entry }`);
-				const text = await new Promise((resolve, reject) => {
-					drive.readFile(entry, { encoding: "utf8" }, (error, data) => {
-						if (error) reject(error);
-						resolve(data);
-					});
-					setTimeout(reject, 1000, new Error("File read timed out"));
-				});
+				const text = await drive.readFile(entry, { encoding: "utf8" });
 				const uriList = scrapeURIs(text);
 				const count = addQueue(...uriList);
 				if (count > 0) console.log(`Added ${ count } keys to queue.`);
