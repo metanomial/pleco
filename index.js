@@ -11,6 +11,7 @@ const HYPER_SCHEME = /^hyper:/;
 const ED25519_KEY = /^[0-9a-f]{64}$/;
 const HYPER_URI_SCRAPER = /hyper:\/\/[0-9a-f]{64}/g;
 const SCRAPABLE_EXTS = /\.(html?|md|json|xml|js|css)$/;
+const PATH_BLACKLIST = /(^|\/)(node_modules|.git)/;
 
 // Parse command line arguments
 const argv = require("minimist")(process.argv.slice(2), {
@@ -94,29 +95,43 @@ async function crawlHyper(key) {
 	try {
 		console.group(`Crawling ${ key } (${ queue.length } Queued)`);
 		const drive = await client.drive.get({ key });
-		const entries = (await drive.readdir("/", { recursive: true }))
-			.filter(entry => entry.match(SCRAPABLE_EXTS));
-		console.log(`Discovered ${ entries.length } scrapable files`);
-		for (const entry of entries) {
-			try {
-				console.group(`Scraping ${ entry }`);
-				const text = await drive.readFile(entry, { encoding: "utf8" });
-				const uriList = scrapeURIs(text);
-				const count = addQueue(...uriList);
-				if (count > 0) console.log(`Added ${ count } keys to queue.`);
-			} catch (error) {
-				console.warn(error.message);
-				console.log(`Skipping file`);
-			} finally {
-				console.groupEnd();
-			}
-		}
+		const entries = await drive.readdir("/", {
+			recursive: true,
+			noMount: true
+		});
+		await scrapeFiles(drive, entries);
 	} catch (error) {
 		console.warn(error.message);
 		console.log(`Skipping drive`);
 	} finally {
 		crawled.add(key);
 		console.groupEnd();
+	}
+}
+
+/**
+ * Scrape files for hypercore keys
+ * @param {any} drive
+ * @param {string[]} entries
+ */
+async function scrapeFiles(drive, entries) {
+	const targets = entries
+		.filter(entry => !entry.match(PATH_BLACKLIST))
+		.filter(entry => entry.match(SCRAPABLE_EXTS));
+	console.log(`Discovered ${ targets.length } scrapable files`);
+	for (const file of targets) {
+		try {
+			console.group(`Scraping ${ file }`);
+			const text = await drive.readFile(file, { encoding: "utf8" });
+			const uriList = scrapeURIs(text);
+			const count = addQueue(...uriList);
+			if (count > 0) console.log(`Added ${ count } keys to queue.`);
+		} catch (error) {
+			console.warn(error.message);
+			console.log(`Skipping file`);
+		} finally {
+			console.groupEnd();
+		}
 	}
 }
 
