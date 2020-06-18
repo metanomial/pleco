@@ -1,0 +1,29 @@
+{
+	"title": "Pleco",
+	"description": "Hypercore web crawler",
+	"forkOf": "hyper://354cdd7c3194918fd550751220286d1cbd6b566647d823c840a217ce8e19e5d1/",
+	"version": "0.1.0",
+	"commands": [
+		{
+			"name": "pleco",
+			"help": "Exhaustively crawl hyperdrives and discover keys.",
+			"usage": "pleco [options] <seed> [<seed>...]",
+			"options": [
+				{
+					"name": "mount",
+					"abbr": "m",
+					"help": "Mount discovered hyperdrives in the working directory",
+					"boolean": true,
+					"default": false
+				},
+				{
+					"name": "version",
+					"abbr": "V",
+					"help": "Print installed version",
+					"boolean": true,
+					"default": false
+				}
+			]
+		}
+	]
+}
